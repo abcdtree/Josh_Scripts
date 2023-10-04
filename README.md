@@ -104,5 +104,5 @@
   - strep_consensus.py -- **create consensus for typing**
 
 
-##Author Jianshu Zhang
-##Email: josh.zhang@unimelb.edu.au / zjs0317@gmail.com 
+## Author Jianshu Zhang
+## Email: josh.zhang@unimelb.edu.au / zjs0317@gmail.com
