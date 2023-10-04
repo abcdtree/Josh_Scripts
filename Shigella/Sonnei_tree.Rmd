@@ -1,0 +1,107 @@
+---
+title: "Shigella_Austrakka"
+author: "Jake_Lacey"
+date: "21/09/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Markdown document for visualising Shigella sonnei trees and plotting metdata
+
+
+#load packages we need to build the tree
+```{r, load packages, include=FALSE}
+library(forcats)
+#library(harrietr)
+library(ggplot2)
+library(ape)
+library(ggtree)
+library(dplyr)
+library(ggnewscale)
+library(ggtreeExtra)
+library(ggstar)
+library(ggtext)
+
+```
+
+#load tree and metadata in csv format
+
+```{r, sonnei_g core phylogeny, include=FALSE}
+sonnei_tree <- read.tree("/home/jianszhang/analysis/shigella/bohra/20230224/sonnei/report/core.newick")
+sonnei_metadata <- read.csv("/home/jianszhang/analysis/shigella/report/20230302/Sonnei_meta_new.csv", na.strings="")
+
+```
+
+
+#reroot tree to the midpoint and then get plotting.
+#to add multiple heatmaps next to the tree we need to set a new colour scale and then make the new heatmap.
+
+```{r, tree, include=FALSE}
+
+# rerooting the tree to midpoint for nicer visual
+
+reroot_phylo_tree <- phytools::midpoint.root(sonnei_tree)
+
+# plot tree with location coloured as tips on tree, in rectangular layout, and bootstrapping visualised
+
+sonnei_tree_2 <- ggtree(reroot_phylo_tree, layout="rectangular") %<+% sonnei_metadata +
+  geom_tippoint(aes(colour = LOCATION, shape = "circle"), size=4) +
+  geom_tiplab(size=3, align=TRUE, linesize=.1) +
+  geom_treescale() +
+  geom_text2(aes(subset=(as.numeric(label) > 80), label=label), size=2, hjust=1.75, vjust=-1.0, check_overlap = TRUE)
+
+sonnei_tree_2
+
+#add ESBL status as heatmap
+
+sonnei_tree_3 <- sonnei_tree_2 + new_scale_fill() +
+         geom_fruit(geom=geom_tile, mapping=aes(fill=ESBL), width=0.000002,offset=0.2) +
+     scale_fill_manual(values=c("blaCTX-M-27"="#8856a7", "blaCTX-M-15"="#9ebcda", "blaCTX-M-3"="#bcbddc", "No ESBL"="#f0f0f0"), na.value="white")
+
+
+sonnei_tree_3
+
+
+ggsave(file="/home/jianszhang/analysis/shigella/report/20230302/sonnei_tree_3.pdf", plot=sonnei_tree_3, width=15, height=15)
+#add Macrolide status as heatmap
+
+sonnei_tree_4 <- sonnei_tree_3 + new_scale_fill() +
+         geom_fruit(geom=geom_tile, mapping=aes(fill=Macrolide), width=0.000002,offset=0.05) +
+     scale_fill_manual(values=c("erm(B)*;mph(A)"="#d95f0e", "mph(A)"="#fec44f"), na.value="white")
+
+sonnei_tree_4
+
+ggsave(file="/home/jianszhang/analysis/shigella/report/20230302/sonnei_tree_4.pdf", plot=sonnei_tree_4, width=15, height=15)
+
+#add Sulfonimide status as heatmap
+
+sonnei_tree_5 <- sonnei_tree_4 + new_scale_fill() +
+         geom_fruit(geom=geom_tile, mapping=aes(fill=Sulfonamide), width=0.000002,offset=0.05) +
+     scale_fill_manual(values=c("sul1;sul2"="#31a354", "sul2"="#a1d99b"), na.value="white")
+
+sonnei_tree_5
+
+#add Trimethroprim status as heatmap
+
+sonnei_tree_6 <- sonnei_tree_5 + new_scale_fill() +
+         geom_fruit(geom=geom_tile, mapping=aes(fill=Trimethoprim), width=0.000002,offset=0.05) +
+     scale_fill_manual(values=c("dfrA1*;dfrA17"="#de2d26", "dfrA1"="#fc9272", "dfrA1*"="#fcae91"), na.value="white")
+
+sonnei_tree_6
+
+#add Quinolone status as heatmap
+
+sonnei_tree_7 <- sonnei_tree_6 + new_scale_fill() +
+         geom_fruit(geom=geom_tile, mapping=aes(fill=Quinolone), width=0.000002,offset=0.05) +
+     scale_fill_manual(values=c("qnrS1"="#0570b0", "qnrB19"="#74a9cf", "qnrS13"="#bdc9e1"), na.value="white")
+
+sonnei_tree_7
+
+#save tree as file.
+
+ggsave(file="/home/jianszhang/analysis/shigella/report/20230302/sonnei_tree_7.pdf", plot=sonnei_tree_7, width=15, height=15)
+
+```

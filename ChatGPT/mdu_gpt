@@ -1,0 +1,4 @@
+#!/bin/bash
+source /home/mdu/conda/etc/profile.d/conda.sh
+conda activate /home/jianszhang/conda/envs/ChatGPT
+python3 /home/jianszhang/github/atom/ChatGPT/mdu_chatgpt.py "$@"
